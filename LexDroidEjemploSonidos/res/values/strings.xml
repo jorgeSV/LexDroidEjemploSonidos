@@ -5,5 +5,7 @@
     <string name="action_settings">Settings</string>
     <string name="hello_world">Hello world!</string>
 	<string name="play_soundpool">Play with SoundPool!</string>
+	<string name="play_media">Play with MediaPlayer</string>
+	<string name="stop_media">Stop MediaPlayer</string>
     
 </resources>

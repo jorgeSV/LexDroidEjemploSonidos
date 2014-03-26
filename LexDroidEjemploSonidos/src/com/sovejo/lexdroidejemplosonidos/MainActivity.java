@@ -1,6 +1,7 @@
 package com.sovejo.lexdroidejemplosonidos;
 
 import android.media.AudioManager;
+import android.media.MediaPlayer;
 import android.media.SoundPool;
 import android.media.SoundPool.OnLoadCompleteListener;
 import android.os.Bundle;
@@ -8,13 +9,21 @@ import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnTouchListener;
+import android.widget.Button;
+import android.widget.TextView;
 import android.app.Activity;
+import android.graphics.Color;
 
-public class MainActivity extends Activity implements OnTouchListener
+public class MainActivity extends Activity implements OnTouchListener, android.view.View.OnClickListener
 {
+	//SoundPool
 	private SoundPool soundPool;
 	boolean loaded = false;
 	private int soundID;
+	
+	//MediaPlayer
+	public MediaPlayer mediaPlayer;
+	Button btPlay, btStop;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) 
@@ -22,8 +31,9 @@ public class MainActivity extends Activity implements OnTouchListener
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 		
-		View view = findViewById(R.id.textView01);
-		view.setOnTouchListener(this);
+		//SoundPool
+		final TextView textView = (TextView)findViewById(R.id.textView01);
+		textView.setOnTouchListener(this);
 		
 		this.setVolumeControlStream(AudioManager.STREAM_MUSIC);
 		soundPool = new SoundPool(10, AudioManager.STREAM_MUSIC, 0);
@@ -34,10 +44,21 @@ public class MainActivity extends Activity implements OnTouchListener
 			{
 				// TODO Auto-generated method stub
 				loaded = true;
+				textView.setTextColor(Color.GREEN);
 			}
 		});
 		
 		soundID = soundPool.load(this, R.raw.main_theme, 1);
+		
+		
+		//MediaPlayer
+		btPlay = (Button) findViewById(R.id.btPlay);
+		btStop = (Button) findViewById(R.id.btStop);
+		
+		btPlay.setOnClickListener(this);
+		btStop.setOnClickListener(this);
+		
+		this.statePressed(btStop);
 	}
 
 	@Override
@@ -61,6 +82,55 @@ public class MainActivity extends Activity implements OnTouchListener
 		
 		return false;
 	}
+
+	@Override
+	public void onClick(View v) 
+	{
+		// TODO Auto-generated method stub
+		switch (v.getId()) 
+		{
+			case R.id.btPlay:
+				play_mp();
+				break;
+
+			case R.id.btStop:
+				stop_mp();
+				break;	
+				
+			default:
+				break;
+		}
+	}
+
+	private void play_mp()
+	{
+		mediaPlayer = MediaPlayer.create(this, R.raw.main_theme);
+		mediaPlayer.start();
+		
+		this.statePressed(btPlay);
+		this.stateNormal(btStop);
+	}
 	
+	private void stop_mp()
+	{
+		if(mediaPlayer != null && mediaPlayer.isPlaying())
+		{
+			mediaPlayer.stop();
+			
+			this.statePressed(btStop);
+			this.stateNormal(btPlay);
+		}
+	}
 	
+	private void statePressed(Button bt)
+	{
+		bt.setClickable(false);
+		bt.setTextColor(Color.GRAY);
+	}
+	
+	private void stateNormal(Button bt)
+	{
+		bt.setClickable(true);
+		bt.setTextColor(Color.BLACK);
+	}
 }
